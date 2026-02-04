@@ -83,7 +83,7 @@ else:
 #	for string in strings:
 #		dumpFile.write(f"{hex(string[0])} {string[1]}\n")
 
-with open(f"{fileBaseName}_decrypted{fileExtension}", "wb") as dumpFile:
-	dumpFile.write(fileData)
+with open(f"{fileBaseName}_decrypted{fileExtension}", "wb") as outFile:
+	outFile.write(fileData)
 
 print(f"Decrypted {len(strings)} strings")
