@@ -2,7 +2,7 @@ import os
 
 from lib.byte_stream import ByteStream
 
-""" Examples:
+""" Templates(contains correct offsets):
 fileName = "bs_v29.258_x32_libg.so"
 lv1_string_encryption_decryption_keyOffset = 0xA64106
 lv1_string_encryption_read_ranges_range_tableOffset = 0x908584
@@ -33,12 +33,12 @@ def xor(key, data):
 fileBaseName, fileExtension = os.path.splitext(fileName)
 fileData = bytearray(open(fileName, "rb").read())
 stream = ByteStream(fileData)
+count = 0
 
 stream.seek(lv1_string_encryption_decryption_keyOffset)
 lv1_string_encryption_decryption_key = stream.readBytes(128)
 
 stream.seek(lv1_string_encryption_read_ranges_range_tableOffset)
-count = 0
 with open(f"{fileBaseName}_dump.txt", "w") as dumpFile:
 	v1 = stream.readInt32()
 	v2 = stream.readInt32()
@@ -51,17 +51,15 @@ with open(f"{fileBaseName}_dump.txt", "w") as dumpFile:
 		
 		offset = (v4 - v1 - v2 - v3 + lv1_string_encryption_read_ranges_range_tableOffset) & 0xFFFFFFFF
 		length = (v2 + v4 - v5) & 0xFFFFFFFF
-		
 		if length == 0:
 			break
+		count += 1
 		
 		stream.seek(offset)
 		
 		value = xor(lv1_string_encryption_decryption_key, stream.readBytes(length))
 		stream.buffer[offset:offset + length] = value
 		dumpFile.write(f"{hex(offset)} {value}\n")
-		
-		count += 1
 		
 		stream.seek(endOffset)
 		v1, v2, v3 = v4, v5, v6
